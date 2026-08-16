@@ -1,0 +1,104 @@
+# ==========================================
+# 1. OS & System Files
+# ==========================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ==========================================
+# 2. CodeIgniter 3 Core
+# ==========================================
+# Abaikan cache dan log, tapi pertahankan index.html untuk keamanan folder
+application/cache/*
+!application/cache/index.html
+
+application/logs/*
+!application/logs/index.html
+application/logs/log-*.php
+
+# Pertahankan .htaccess internal bawaan CI3 di dalam folder application
+!application/*/.htaccess
+
+# Abaikan build files dokumentasi (User Guide) CI3
+user_guide_src/build/*
+user_guide_src/cilexer/build/*
+user_guide_src/cilexer/dist/*
+user_guide_src/cilexer/pycilexer.egg-info/*
+
+# ==========================================
+# 3. Server Config & Environment
+# ==========================================
+# Mengabaikan konfigurasi database/sistem lokal
+application/config/development/
+
+# Mengabaikan .htaccess root (Produksi menggunakan .htaccess terpisah)
+.htaccess
+
+# Mengabaikan semua file log sistem tambahan
+*.log
+debug.log
+
+# ==========================================
+# 4. Dependencies (Composer & NPM)
+# ==========================================
+# Backend (PHP)
+/vendor/
+# composer.lock (Disarankan tidak di-ignore agar versi library konsisten di Production)
+
+# Frontend / Tooling (Node.js)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ==========================================
+# 5. IDE & Editor Files
+# ==========================================
+# NetBeans
+/nbproject/
+
+# IntelliJ / PhpStorm / VSCode
+.idea/*
+.vscode/*
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# ==========================================
+# 6. Testing
+# ==========================================
+/tests/tests/
+/tests/results/
+
+# ==========================================
+# 7. Custom / Ad-Hoc Scripts (Local Only)
+# ==========================================
+# Mengabaikan script ad-hoc migrasi historis Excel agar tidak naik ke produksi
+application/controllers/Import_vm.php
+application/controllers/Import_incident.php
+application/views/vm_import/
+
+# Mengabaikan backup dan media lokal
+*.bak
+*.tmp
+/images/
+/uploads/
+
+# ==========================================
+# 8. Sensitive / Runtime Files
+# ==========================================
+
+# Server authentication file
+.htpasswd
+
+# Environment / credentials
+.env
+.env.*
+!.env.example
+
+# CodeIgniter sessions
+application/sessions/

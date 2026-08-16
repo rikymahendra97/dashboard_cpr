@@ -1,0 +1,228 @@
+/* area atas */
+.dataTables_wrapper .dataTables_length {
+    float: left;
+    margin-bottom: 10px;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+    margin-bottom: 10px;
+}
+
+.dataTables_wrapper:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+/* search input */
+.dataTables_filter input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 10px;
+}
+
+/* dropdown page length */
+.dataTables_length select {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+/* pagination tengah */
+.dataTables_paginate {
+    float: none !important;
+    text-align: center !important;
+    margin-top: 15px;
+    width: 100%;
+}
+
+/* link page normal */
+.dataTables_paginate a {
+    display: inline-block !important;
+    padding: 6px 14px !important;
+    margin: 0 3px !important;
+    border: 1px solid #337ab7 !important;
+    background: #fff !important;
+    color: #337ab7 !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    min-width: 36px;
+    text-align: center;
+}
+
+/* hover */
+.dataTables_paginate a:hover {
+    background: #337ab7 !important;
+    color: #fff !important;
+}
+
+/* active page */
+.dataTables_paginate span.paginate_active {
+    display: inline-block !important;
+    padding: 6px 14px !important;
+    margin: 0 3px !important;
+    border: 1px solid #337ab7 !important;
+    background: #337ab7 !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    min-width: 36px;
+    text-align: center;
+}
+
+/* disabled page */
+.dataTables_paginate span.paginate_button,
+.dataTables_paginate span.paginate_disabled_previous,
+.dataTables_paginate span.paginate_disabled_next,
+.dataTables_paginate a.paginate_disabled_previous,
+.dataTables_paginate a.paginate_disabled_next {
+    display: inline-block !important;
+    padding: 6px 14px !important;
+    margin: 0 3px !important;
+    border: 1px solid #ccc !important;
+    background: #f5f5f5 !important;
+    color: #999 !important;
+    border-radius: 4px !important;
+    cursor: not-allowed !important;
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Previous & Next aktif */
+.dataTables_paginate a.paginate_enabled_previous,
+.dataTables_paginate a.paginate_enabled_next {
+    display: inline-block !important;
+    min-width: 80px;
+    text-align: center;
+    padding: 6px 14px !important;
+    margin: 0 5px !important;
+    border-radius: 4px !important;
+    border: 1px solid #337ab7 !important;
+    background: #337ab7 !important;
+    color: #fff !important;
+}
+
+/* hover previous & next */
+.dataTables_paginate a.paginate_enabled_previous:hover,
+.dataTables_paginate a.paginate_enabled_next:hover {
+    background: #286090 !important;
+    color: #fff !important;
+}
+
+/* header */
+#example thead th,
+#example thead th.sorting,
+#example thead th.sorting_asc,
+#example thead th.sorting_desc {
+    background-color: #34495e !important;
+    color: #ffffff !important;
+    border-color: #96ecd0 !important;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+/* hover row */
+#example tbody tr:hover {
+    background: #f5faff;
+}
+
+/* Fix khusus pagination previous / next agar teks tidak kepotong */
+.dataTables_paginate a,
+.dataTables_paginate span {
+    height: auto !important;
+    line-height: 1.4 !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+}
+
+.dataTables_paginate a.paginate_enabled_previous,
+.dataTables_paginate a.paginate_enabled_next,
+.dataTables_paginate span.paginate_disabled_previous,
+.dataTables_paginate span.paginate_disabled_next {
+    min-width: 80px !important;
+    height: auto !important;
+    line-height: 1.4 !important;
+    padding: 8px 14px !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+}
+
+.dataTables_paginate {
+    font-size: 14px !important;
+    line-height: normal !important;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#example {
+    width: max-content !important;
+    min-width: 100%;
+}
+
+#example th,
+#example td {
+    white-space: normal !important;
+    vertical-align: top;
+}
+
+/* buang jarak aneh di bawah */
+.dataTables_wrapper {
+    margin-bottom: 0 !important;
+}
+
+/* rapetin table wrapper */
+.table-responsive {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* hilangin space kosong DataTables */
+.dataTables_scroll {
+    margin-bottom: 0 !important;
+}
+
+/* ini biasanya biang gap */
+.dataTables_scrollBody {
+    margin-bottom: 0 !important;
+}
+
+/* pagination naik dikit */
+.dataTables_paginate {
+    margin-top: 5px !important;
+}
+
+.dataTables_scrollBody {
+    overflow-y: hidden !important;
+}
+
+#example th:last-child,
+#example td:last-child {
+    width: 75px; /* dikit lebih lega dari 70 */
+    min-width: 75px;
+    white-space: normal !important;
+    vertical-align: top;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.action-btn .btn {
+    width: 100%;
+    padding: 3px 4px; /* lebih slim dikit */
+    text-align: center;
+    font-size: 11px; /* biar compact */
+}
+
+.detail-disk {
+    white-space: pre-line;
+}
