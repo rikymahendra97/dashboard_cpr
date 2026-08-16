@@ -64,6 +64,13 @@ $segment = $this->uri->segment(1);
                             "vm_incident",
                         ) ?>"><i class="fa fa-exclamation-triangle"></i> Tiket Utilisasi</a>
                     </li>
+                    <li class="<?= $segment == "replication_backup" ? "current-page active" : "" ?>">
+                        <a href="<?= site_url(
+                            "replication_backup",
+                        ) ?>">
+                            <i class="fa fa-database"></i> Replication & Backup
+                        </a>
+                    </li>
                 </ul>
             </div>
 
