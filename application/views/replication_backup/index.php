@@ -371,9 +371,11 @@ $list_vm = $list_vm ?? [];
                                         <th>Site</th>
                                         <th>Environment</th>
                                         <th>Aplikasi</th>
+                                        <th>Criticality</th>
                                         <th>Status Backup</th>
                                         <th>vReps</th>
                                         <th>Rubrik</th>
+                                        <th>DB</th>
                                         <th>HA</th>
                                         <th>Standby</th>
                                         <th>Aksi</th>
@@ -456,6 +458,12 @@ $list_vm = $list_vm ?? [];
                                                 </td>
 
                                                 <td>
+                                                    <?= html_escape(
+                                                        $vm->criticality ?: "-"
+                                                    ) ?>
+                                                </td>
+
+                                                <td>
                                                     <span
                                                         class="rb-status <?= $status_class ?>"
                                                     >
@@ -479,6 +487,18 @@ $list_vm = $list_vm ?? [];
 
                                                 <td>
                                                     <?php if ((int) $vm->rubrik === 1): ?>
+                                                        <span class="rb-yes">
+                                                            YES
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="rb-no">
+                                                            NO
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                                <td>
+                                                    <?php if ((int) $vm->db === 1): ?>
                                                         <span class="rb-yes">
                                                             YES
                                                         </span>
