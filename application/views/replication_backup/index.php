@@ -613,14 +613,15 @@ $list_vm = $list_vm ?? [];
 
                                                 <td>
 
-                                                    <button
-                                                        type="button"
+                                                    <a
+                                                        href="<?= site_url(
+                                                            "replication_backup/details_vm/" . $vm->id_virtual_machine
+                                                        ) ?>"
                                                         class="btn btn-info btn-xs rb-action-btn"
                                                         title="Detail"
-                                                        disabled
                                                     >
                                                         <i class="fa fa-search"></i>
-                                                    </button>
+                                                    </a>
 
                                                     <button
                                                         type="button"
