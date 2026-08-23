@@ -44,4 +44,33 @@ class Replication_backup extends CI_Controller
         $this->load->view("main/5footer", $data);
         $this->load->view("main/6bottom", $data);
     }
+
+    public function detail($id_virtual_machine)
+    {
+        $session = $this->session->userdata("user_data");
+
+        $data["page_title"] = "Replication & Backup - Detail";
+        $data["id"] = $session;
+        $data["user_session"] = $this->User_model->get($session["id_user"]);
+
+        $data["vm_detail"] =
+            $this->Replication_backup_model->get_vm_detail(
+                $id_virtual_machine
+            );
+
+        if (!$data["vm_detail"]) {
+            show_404();
+            return;
+        }
+
+        $data["css_arr"] = [];
+        $data["js_arr"] = [];
+
+        $this->load->view("main/1head", $data);
+        $this->load->view("main/2sidebar", $data);
+        $this->load->view("main/3topnavigation", $data);
+        $this->load->view("replication_backup/detail", $data);
+        $this->load->view("main/5footer", $data);
+        $this->load->view("main/6bottom", $data);
+    }
 }

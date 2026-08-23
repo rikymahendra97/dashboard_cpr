@@ -193,4 +193,108 @@ class Replication_backup_model extends CI_Model
 
         return $this->db->get()->result();
     }
+
+        /**
+     * ============================================================
+     * DETAIL VM
+     * ============================================================
+     */
+    public function get_vm_detail($id_virtual_machine)
+    {
+        $this->db->select("
+            vm.id_virtual_machine,
+            vm.virtual_machine_name,
+            vm.power_state,
+            vm.vcenter_name,
+            vm.id_site,
+            vm.environment,
+
+            GROUP_CONCAT(
+                DISTINCT app.application_system_name
+                ORDER BY app.application_system_name
+                SEPARATOR ', '
+            ) AS application_systems,
+
+            CASE MAX(
+                CASE
+                    WHEN cr.criticality_name = 'Critical' THEN 5
+                    WHEN cr.criticality_name = 'Very High' THEN 4
+                    WHEN cr.criticality_name = 'High' THEN 3
+                    WHEN cr.criticality_name = 'Medium' THEN 2
+                    WHEN cr.criticality_name = 'Low' THEN 1
+                    ELSE 0
+                END
+            )
+                WHEN 5 THEN 'Critical'
+                WHEN 4 THEN 'Very High'
+                WHEN 3 THEN 'High'
+                WHEN 2 THEN 'Medium'
+                WHEN 1 THEN 'Low'
+                ELSE 'Others'
+            END AS criticality,
+
+            b.status AS backup_status,
+            b.status_referensi,
+            b.vrep,
+            b.rubrik,
+            b.db,
+            b.ha,
+            b.slave,
+            b.standby
+        ", false);
+
+        $this->db->from($this->table_vm . " vm");
+
+        /**
+         * Backup / Replication
+         */
+        $this->db->join(
+            $this->table_backup . " b",
+            "b.id_virtual_machine = vm.id_virtual_machine",
+            "left"
+        );
+
+        /**
+         * VM -> Application System
+         */
+        $this->db->join(
+            "relation_table rt",
+            "rt.id_virtual_machine = vm.id_virtual_machine",
+            "left"
+        );
+
+        /**
+         * Application System
+         */
+        $this->db->join(
+            "master_application_system app",
+            "app.id_application_system = rt.id_application_system",
+            "left"
+        );
+
+        /**
+         * Application System -> Criticality
+         */
+        $this->db->join(
+            "master_criticality cr",
+            "cr.id_criticality = app.id_criticality",
+            "left"
+        );
+
+        $this->db->where(
+            "vm.id_virtual_machine",
+            $id_virtual_machine
+        );
+
+        $this->db->where(
+            "vm.is_active",
+            1
+        );
+
+        $this->db->group_by(
+            "vm.id_virtual_machine"
+        );
+
+        return $this->db->get()->row();
+    }
 }

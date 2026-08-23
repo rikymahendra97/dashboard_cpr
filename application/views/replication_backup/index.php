@@ -141,6 +141,46 @@ $list_vm = $list_vm ?? [];
         color: #fff;
     }
 
+    .rb-criticality {
+        display: inline-block;
+        min-width: 70px;
+        padding: 4px 9px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .rb-criticality-critical {
+        background: #DC2626;
+        color: #fff;
+    }
+
+    .rb-criticality-very-high {
+        background: #F97316;
+        color: #fff;
+    }
+
+    .rb-criticality-high {
+        background: #EAB308;
+        color: #fff;
+    }
+
+    .rb-criticality-medium {
+        background: #3B82F6;
+        color: #fff;
+    }
+
+    .rb-criticality-low {
+        background: #10B981;
+        color: #fff;
+    }
+
+    .rb-criticality-other {
+        background: #94A3B8;
+        color: #fff;
+    }
+
     .rb-action-btn {
         width: 28px;
         height: 28px;
@@ -164,6 +204,10 @@ $list_vm = $list_vm ?? [];
         .rb-kpi-grid {
             grid-template-columns: 1fr;
         }
+    }
+
+    #table-replication-backup {
+        min-width: 1700px;
     }
 </style>
 
@@ -458,9 +502,43 @@ $list_vm = $list_vm ?? [];
                                                 </td>
 
                                                 <td>
-                                                    <?= html_escape(
-                                                        $vm->criticality ?: "-"
-                                                    ) ?>
+                                                    <?php
+                                                    $criticality = trim((string) ($vm->criticality ?? ""));
+
+                                                    switch (strtolower($criticality)) {
+                                                        case "critical":
+                                                            $criticality_class = "rb-criticality-critical";
+                                                            break;
+
+                                                        case "very high":
+                                                            $criticality_class = "rb-criticality-very-high";
+                                                            break;
+
+                                                        case "high":
+                                                            $criticality_class = "rb-criticality-high";
+                                                            break;
+
+                                                        case "medium":
+                                                            $criticality_class = "rb-criticality-medium";
+                                                            break;
+
+                                                        case "low":
+                                                            $criticality_class = "rb-criticality-low";
+                                                            break;
+
+                                                        default:
+                                                            $criticality_class = "rb-criticality-other";
+                                                            break;
+                                                    }
+
+                                                    $criticality_label = $criticality !== ""
+                                                        ? $criticality
+                                                        : "-";
+                                                    ?>
+
+                                                    <span class="rb-criticality <?= $criticality_class ?>">
+                                                        <?= html_escape($criticality_label) ?>
+                                                    </span>
                                                 </td>
 
                                                 <td>
