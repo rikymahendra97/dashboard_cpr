@@ -63,6 +63,11 @@ class Replication_backup extends CI_Controller
             return;
         }
 
+        $data["vm_pairs"] =
+            $this->Replication_backup_model->get_vm_pairs(
+                $id_virtual_machine
+            );
+
         $data["css_arr"] = [];
         $data["js_arr"] = [];
 

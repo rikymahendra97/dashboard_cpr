@@ -25,6 +25,21 @@ $sla_rubrik = $vm_detail->sla_rubrik ?: "-";
 $backup_status = $vm_detail->backup_status ?: "-";
 $status_referensi = $vm_detail->status_referensi ?: "-";
 
+$pair_groups = array(
+    "DB" => array(),
+    "HA" => array(),
+    "SLAVE" => array(),
+    "STANDBY" => array()
+);
+
+if (!empty($vm_pairs)) {
+    foreach ($vm_pairs as $pair) {
+        if (isset($pair_groups[$pair->pair_type])) {
+            $pair_groups[$pair->pair_type][] = $pair;
+        }
+    }
+}
+
 /**
  * ------------------------------------------------------------
  * Criticality badge
@@ -605,7 +620,17 @@ function rb_detail_protection_badge($value)
                         </span>
 
                         <span class="rb-detail-value">
-                            <?= html_escape($vm_detail->vm_pasangan_db ?: "-") ?>
+                            <?php if (!empty($pair_groups["DB"])): ?>
+
+                                <?php foreach ($pair_groups["DB"] as $pair): ?>
+                                    <div>
+                                        <?= html_escape($pair->virtual_machine_name) ?>
+                                    </div>
+                                <?php endforeach; ?>
+
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
                         </span>
 
                     </div>
@@ -618,7 +643,17 @@ function rb_detail_protection_badge($value)
                         </span>
 
                         <span class="rb-detail-value">
-                            <?= html_escape($vm_detail->vm_pasangan_ha ?: "-") ?>
+                            <?php if (!empty($pair_groups["HA"])): ?>
+
+                                <?php foreach ($pair_groups["HA"] as $pair): ?>
+                                    <div>
+                                        <?= html_escape($pair->virtual_machine_name) ?>
+                                    </div>
+                                <?php endforeach; ?>
+
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
                         </span>
 
                     </div>
@@ -631,7 +666,17 @@ function rb_detail_protection_badge($value)
                         </span>
 
                         <span class="rb-detail-value">
-                            <?= html_escape($vm_detail->vm_pasangan_slave ?: "-") ?>
+                            <?php if (!empty($pair_groups["SLAVE"])): ?>
+
+                                <?php foreach ($pair_groups["SLAVE"] as $pair): ?>
+                                    <div>
+                                        <?= html_escape($pair->virtual_machine_name) ?>
+                                    </div>
+                                <?php endforeach; ?>
+
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
                         </span>
 
                     </div>
@@ -644,7 +689,17 @@ function rb_detail_protection_badge($value)
                         </span>
 
                         <span class="rb-detail-value">
-                            <?= html_escape($vm_detail->vm_pasangan_standby ?: "-") ?>
+                            <?php if (!empty($pair_groups["STANDBY"])): ?>
+
+                                <?php foreach ($pair_groups["STANDBY"] as $pair): ?>
+                                    <div>
+                                        <?= html_escape($pair->virtual_machine_name) ?>
+                                    </div>
+                                <?php endforeach; ?>
+
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
                         </span>
 
                     </div>

@@ -120,23 +120,34 @@ $list_vm = $list_vm ?? [];
 
     .rb-status {
         display: inline-block;
+        min-width: 95px;
         padding: 4px 10px;
         border-radius: 12px;
         font-size: 10px;
         font-weight: bold;
+        text-align: center;
     }
 
+    /* DONE BACKUP */
     .rb-status-done {
         background: #10B981;
         color: #fff;
     }
 
+    /* NEED BACKUP */
     .rb-status-need {
         background: #F59E0B;
         color: #fff;
     }
 
+    /* NO NEED BACKUP */
     .rb-status-no-need {
+        background: #EF4444;
+        color: #fff;
+    }
+
+    /* Status selain 3 status utama */
+    .rb-status-default {
         background: #94A3B8;
         color: #fff;
     }
@@ -435,22 +446,34 @@ $list_vm = $list_vm ?? [];
                                         <?php foreach ($list_vm as $index => $vm): ?>
 
                                             <?php
-                                            $status = strtolower(
+                                            $status = strtoupper(
                                                 trim((string) ($vm->backup_status ?? ""))
                                             );
 
-                                            if ($status === "done") {
-                                                $status_class = "rb-status-done";
-                                            } elseif ($status === "need") {
-                                                $status_class = "rb-status-need";
-                                            } elseif ($status === "no need") {
-                                                $status_class = "rb-status-no-need";
-                                            } else {
-                                                $status_class = "rb-status-no-need";
+                                            switch ($status) {
+                                                case "DONE BACKUP":
+                                                    $status_class = "rb-status-done";
+                                                    break;
+
+                                                case "NEED BACKUP":
+                                                    $status_class = "rb-status-need";
+                                                    break;
+
+                                                case "NO NEED BACKUP":
+                                                    $status_class = "rb-status-no-need";
+                                                    break;
+
+                                                default:
+                                                    $status_class = "rb-status-default";
+                                                    break;
                                             }
 
                                             $status_label =
-                                                $vm->backup_status ?: "-";
+                                                trim((string) ($vm->backup_status ?? ""));
+
+                                            if ($status_label === "") {
+                                                $status_label = "-";
+                                            }
                                             ?>
 
                                             <tr>
@@ -503,41 +526,54 @@ $list_vm = $list_vm ?? [];
 
                                                 <td>
                                                     <?php
-                                                    $criticality = trim((string) ($vm->criticality ?? ""));
+                                                    $criticality = trim(
+                                                        (string) ($vm->criticality ?? "")
+                                                    );
 
                                                     switch (strtolower($criticality)) {
                                                         case "critical":
-                                                            $criticality_class = "rb-criticality-critical";
+                                                            $criticality_class =
+                                                                "rb-criticality-critical";
                                                             break;
 
                                                         case "very high":
-                                                            $criticality_class = "rb-criticality-very-high";
+                                                            $criticality_class =
+                                                                "rb-criticality-very-high";
                                                             break;
 
                                                         case "high":
-                                                            $criticality_class = "rb-criticality-high";
+                                                            $criticality_class =
+                                                                "rb-criticality-high";
                                                             break;
 
                                                         case "medium":
-                                                            $criticality_class = "rb-criticality-medium";
+                                                            $criticality_class =
+                                                                "rb-criticality-medium";
                                                             break;
 
                                                         case "low":
-                                                            $criticality_class = "rb-criticality-low";
+                                                            $criticality_class =
+                                                                "rb-criticality-low";
                                                             break;
 
                                                         default:
-                                                            $criticality_class = "rb-criticality-other";
+                                                            $criticality_class =
+                                                                "rb-criticality-other";
                                                             break;
                                                     }
 
-                                                    $criticality_label = $criticality !== ""
-                                                        ? $criticality
-                                                        : "-";
+                                                    $criticality_label =
+                                                        $criticality !== ""
+                                                            ? $criticality
+                                                            : "-";
                                                     ?>
 
-                                                    <span class="rb-criticality <?= $criticality_class ?>">
-                                                        <?= html_escape($criticality_label) ?>
+                                                    <span
+                                                        class="rb-criticality <?= $criticality_class ?>"
+                                                    >
+                                                        <?= html_escape(
+                                                            $criticality_label
+                                                        ) ?>
                                                     </span>
                                                 </td>
 
@@ -615,7 +651,8 @@ $list_vm = $list_vm ?? [];
 
                                                     <a
                                                         href="<?= site_url(
-                                                            "replication_backup/details_vm/" . $vm->id_virtual_machine
+                                                            "replication_backup/details_vm/" .
+                                                            $vm->id_virtual_machine
                                                         ) ?>"
                                                         class="btn btn-info btn-xs rb-action-btn"
                                                         title="Detail"
@@ -642,7 +679,7 @@ $list_vm = $list_vm ?? [];
 
                                         <tr>
 
-                                            <td colspan="13">
+                                            <td colspan="15">
                                                 Belum ada data Virtual Machine.
                                             </td>
 

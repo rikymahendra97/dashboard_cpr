@@ -17,37 +17,37 @@ class Replication_backup_model extends CI_Model
             ->select("
                 SUM(CASE
                     WHEN vm.id_site = 'GTI'
-                    AND LOWER(TRIM(b.status)) = 'done'
+                    AND UPPER(TRIM(COALESCE(b.status, ''))) = 'DONE BACKUP'
                     THEN 1 ELSE 0
                 END) AS done_replication,
 
                 SUM(CASE
                     WHEN vm.id_site = 'GTI'
-                    AND LOWER(TRIM(b.status)) = 'need'
+                    AND UPPER(TRIM(COALESCE(b.status, ''))) = 'NEED BACKUP'
                     THEN 1 ELSE 0
                 END) AS need_replication,
 
                 SUM(CASE
                     WHEN vm.id_site = 'GTI'
-                    AND LOWER(TRIM(b.status)) = 'no need'
+                    AND UPPER(TRIM(COALESCE(b.status, ''))) = 'NO NEED BACKUP'
                     THEN 1 ELSE 0
                 END) AS no_need_replication,
 
                 SUM(CASE
                     WHEN vm.id_site = 'TBN'
-                    AND LOWER(TRIM(b.status)) = 'done'
+                    AND UPPER(TRIM(COALESCE(b.status, ''))) = 'DONE BACKUP'
                     THEN 1 ELSE 0
                 END) AS done_backup,
 
                 SUM(CASE
                     WHEN vm.id_site = 'TBN'
-                    AND LOWER(TRIM(b.status)) = 'need'
+                    AND UPPER(TRIM(COALESCE(b.status, ''))) = 'NEED BACKUP'
                     THEN 1 ELSE 0
                 END) AS need_backup,
 
                 SUM(CASE
                     WHEN vm.id_site = 'TBN'
-                    AND LOWER(TRIM(b.status)) = 'no need'
+                    AND UPPER(TRIM(COALESCE(b.status, ''))) = 'NO NEED BACKUP'
                     THEN 1 ELSE 0
                 END) AS no_need_backup,
 
@@ -57,8 +57,7 @@ class Replication_backup_model extends CI_Model
                 END) AS vrep,
 
                 SUM(CASE
-                    WHEN vm.id_site = 'GTI'
-                    AND b.rubrik = 1
+                    WHEN b.rubrik = 1
                     THEN 1 ELSE 0
                 END) AS rubrik,
 
@@ -235,11 +234,6 @@ class Replication_backup_model extends CI_Model
 
             MAX(sla.sla_rubrik) AS sla_rubrik,
 
-            MAX(vm_db.virtual_machine_name) AS vm_pasangan_db,
-            MAX(vm_ha.virtual_machine_name) AS vm_pasangan_ha,
-            MAX(vm_slave.virtual_machine_name) AS vm_pasangan_slave,
-            MAX(vm_standby.virtual_machine_name) AS vm_pasangan_standby,
-
             b.status AS backup_status,
             b.status_referensi,
             b.vrep,
@@ -341,42 +335,6 @@ class Replication_backup_model extends CI_Model
             false
         );
 
-        /**
-         * Pasangan DB
-         */
-        $this->db->join(
-            $this->table_vm . " vm_db",
-            "vm_db.id_virtual_machine = b.id_vm_db",
-            "left"
-        );
-
-        /**
-         * Pasangan HA
-         */
-        $this->db->join(
-            $this->table_vm . " vm_ha",
-            "vm_ha.id_virtual_machine = b.id_vm_ha",
-            "left"
-        );
-
-        /**
-         * Pasangan Slave
-         */
-        $this->db->join(
-            $this->table_vm . " vm_slave",
-            "vm_slave.id_virtual_machine = b.id_vm_slave",
-            "left"
-        );
-
-        /**
-         * Pasangan Standby
-         */
-        $this->db->join(
-            $this->table_vm . " vm_standby",
-            "vm_standby.id_virtual_machine = b.id_vm_standby",
-            "left"
-        );
-
         $this->db->where(
             "vm.id_virtual_machine",
             $id_virtual_machine
@@ -392,5 +350,54 @@ class Replication_backup_model extends CI_Model
         );
 
         return $this->db->get()->row();
+    }
+
+    /**
+     * ============================================================
+     * PAIRS VM
+     * ============================================================
+     */
+    public function get_vm_pairs($id_virtual_machine)
+    {
+        $this->db->select("
+            p.pair_type,
+            p.id_vm_pair,
+            vm_pair.virtual_machine_name
+        ");
+
+        $this->db->from("virtual_machine_backup_pair p");
+
+        $this->db->join(
+            $this->table_vm . " vm_pair",
+            "vm_pair.id_virtual_machine = p.id_vm_pair",
+            "left"
+        );
+
+        $this->db->where(
+            "p.id_virtual_machine",
+            $id_virtual_machine
+        );
+
+        $this->db->where_in(
+            "p.pair_type",
+            array(
+                "DB",
+                "HA",
+                "SLAVE",
+                "STANDBY"
+            )
+        );
+
+        $this->db->order_by(
+            "p.pair_type",
+            "ASC"
+        );
+
+        $this->db->order_by(
+            "vm_pair.virtual_machine_name",
+            "ASC"
+        );
+
+        return $this->db->get()->result();
     }
 }
