@@ -45,7 +45,7 @@ class Replication_backup extends CI_Controller
         $this->load->view("main/6bottom", $data);
     }
 
-    public function detail($id_virtual_machine)
+    public function details_vm($id_virtual_machine)
     {
         $session = $this->session->userdata("user_data");
 
@@ -69,7 +69,7 @@ class Replication_backup extends CI_Controller
         $this->load->view("main/1head", $data);
         $this->load->view("main/2sidebar", $data);
         $this->load->view("main/3topnavigation", $data);
-        $this->load->view("replication_backup/detail", $data);
+        $this->load->view("replication_backup/details_vm", $data);
         $this->load->view("main/5footer", $data);
         $this->load->view("main/6bottom", $data);
     }

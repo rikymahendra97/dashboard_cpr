@@ -20,6 +20,7 @@ $site = $vm_detail->id_site ?: "-";
 $environment = $vm_detail->environment ?: "-";
 $applications = $vm_detail->application_systems ?: "-";
 $criticality = $vm_detail->criticality ?: "Others";
+$sla_rubrik = $vm_detail->sla_rubrik ?: "-";
 
 $backup_status = $vm_detail->backup_status ?: "-";
 $status_referensi = $vm_detail->status_referensi ?: "-";
@@ -425,10 +426,7 @@ function rb_detail_protection_badge($value)
                         </div>
 
                         <!-- Application -->
-                        <div
-                            class="rb-detail-item"
-                            style="grid-column: 1 / -1;"
-                        >
+                        <div class="rb-detail-item">
 
                             <span class="rb-detail-label">
                                 Aplikasi
@@ -438,6 +436,17 @@ function rb_detail_protection_badge($value)
                                 <?= html_escape($applications) ?>
                             </span>
 
+                        </div>
+
+                        <!-- SLA Rubrik -->
+                        <div class="rb-detail-item">
+                            <span class="rb-detail-label">
+                                SLA Rubrik
+                            </span>
+
+                            <span class="rb-detail-value">
+                                <?= html_escape($sla_rubrik) ?>
+                            </span>
                         </div>
 
                     </div>
@@ -569,6 +578,74 @@ function rb_detail_protection_badge($value)
                             </span>
 
                         </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =====================================================
+                 PASANGAN VM
+            ====================================================== -->
+            <div class="rb-detail-section">
+
+                <h3 class="rb-detail-section-title">
+                    <i class="fa fa-shield"></i>
+                    VM Pasangan
+                </h3>
+
+                <div class="rb-detail-grid">
+
+                    <!-- VM Pasangan DB -->
+                    <div class="rb-detail-item">
+
+                        <span class="rb-detail-label">
+                            VM Pasangan DB
+                        </span>
+
+                        <span class="rb-detail-value">
+                            <?= html_escape($vm_detail->vm_pasangan_db ?: "-") ?>
+                        </span>
+
+                    </div>
+
+                    <!-- VM Pasangan HA -->
+                    <div class="rb-detail-item">
+
+                        <span class="rb-detail-label">
+                            VM Pasangan HA
+                        </span>
+
+                        <span class="rb-detail-value">
+                            <?= html_escape($vm_detail->vm_pasangan_ha ?: "-") ?>
+                        </span>
+
+                    </div>
+
+                    <!-- VM Pasangan Slave -->
+                    <div class="rb-detail-item">
+
+                        <span class="rb-detail-label">
+                            VM Pasangan Slave
+                        </span>
+
+                        <span class="rb-detail-value">
+                            <?= html_escape($vm_detail->vm_pasangan_slave ?: "-") ?>
+                        </span>
+
+                    </div>
+
+                    <!-- VM Pasangan Standby -->
+                    <div class="rb-detail-item">
+
+                        <span class="rb-detail-label">
+                            VM Pasangan Standby
+                        </span>
+
+                        <span class="rb-detail-value">
+                            <?= html_escape($vm_detail->vm_pasangan_standby ?: "-") ?>
+                        </span>
 
                     </div>
 

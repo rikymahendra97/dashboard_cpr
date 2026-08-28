@@ -233,6 +233,13 @@ class Replication_backup_model extends CI_Model
                 ELSE 'Others'
             END AS criticality,
 
+            MAX(sla.sla_rubrik) AS sla_rubrik,
+
+            MAX(vm_db.virtual_machine_name) AS vm_pasangan_db,
+            MAX(vm_ha.virtual_machine_name) AS vm_pasangan_ha,
+            MAX(vm_slave.virtual_machine_name) AS vm_pasangan_slave,
+            MAX(vm_standby.virtual_machine_name) AS vm_pasangan_standby,
+
             b.status AS backup_status,
             b.status_referensi,
             b.vrep,
@@ -278,6 +285,95 @@ class Replication_backup_model extends CI_Model
         $this->db->join(
             "master_criticality cr",
             "cr.id_criticality = app.id_criticality",
+            "left"
+        );
+
+        /**
+         * SLA Rubrik
+         */
+        $this->db->join(
+            "(
+                SELECT
+                    s.virtual_machine,
+                    vc_sla.vcenter_name,
+                    vc_sla.id_site,
+                    s.location,
+                    MAX(s.sla) AS sla_rubrik
+                FROM (
+                    SELECT
+                        virtual_machine,
+                        sla,
+                        location
+                    FROM live_mount_log_tbn
+
+                    UNION ALL
+
+                    SELECT
+                        virtual_machine,
+                        sla,
+                        location
+                    FROM live_mount_log_gti
+
+                    UNION ALL
+
+                    SELECT
+                        virtual_machine,
+                        sla,
+                        location
+                    FROM live_mount_log_odc
+                ) s
+
+                INNER JOIN master_vcenter vc_sla
+                    ON s.location = vc_sla.vcenter_ip
+
+                WHERE vc_sla.id_site IN ('GTI', 'TBN', 'ODC')
+
+                GROUP BY
+                    s.virtual_machine,
+                    vc_sla.vcenter_name,
+                    vc_sla.id_site,
+                    s.location
+            ) sla",
+            "sla.virtual_machine = vm.virtual_machine_name
+            AND sla.vcenter_name = vm.vcenter_name
+            AND sla.id_site = vm.id_site",
+            "left",
+            false
+        );
+
+        /**
+         * Pasangan DB
+         */
+        $this->db->join(
+            $this->table_vm . " vm_db",
+            "vm_db.id_virtual_machine = b.id_vm_db",
+            "left"
+        );
+
+        /**
+         * Pasangan HA
+         */
+        $this->db->join(
+            $this->table_vm . " vm_ha",
+            "vm_ha.id_virtual_machine = b.id_vm_ha",
+            "left"
+        );
+
+        /**
+         * Pasangan Slave
+         */
+        $this->db->join(
+            $this->table_vm . " vm_slave",
+            "vm_slave.id_virtual_machine = b.id_vm_slave",
+            "left"
+        );
+
+        /**
+         * Pasangan Standby
+         */
+        $this->db->join(
+            $this->table_vm . " vm_standby",
+            "vm_standby.id_virtual_machine = b.id_vm_standby",
             "left"
         );
 
