@@ -400,4 +400,305 @@ class Replication_backup_model extends CI_Model
 
         return $this->db->get()->result();
     }
+
+    /**
+     * ============================================================
+     * VM OPTIONS
+     * List VM aktif untuk pilihan pasangan pada halaman Edit
+     * ============================================================
+     */
+    public function get_vm_options($exclude_id = null)
+    {
+        $this->db->select("
+            id_virtual_machine,
+            virtual_machine_name,
+            id_site,
+            vcenter_name,
+            environment
+        ");
+
+        $this->db->from($this->table_vm);
+
+        $this->db->where(
+            "is_active",
+            1
+        );
+
+        /**
+         * VM yang sedang diedit tidak boleh
+         * menjadi pasangan dirinya sendiri.
+         */
+        if (!empty($exclude_id)) {
+            $this->db->where(
+                "id_virtual_machine !=",
+                $exclude_id
+            );
+        }
+
+        $this->db->order_by(
+            "virtual_machine_name",
+            "ASC"
+        );
+
+        return $this->db->get()->result();
+    }
+
+    /**
+     * ============================================================
+     * SAVE EDIT CONFIGURATION
+     * ============================================================
+     */
+    public function save_edit_configuration(
+        $id_virtual_machine,
+        $status_referensi,
+        $db,
+        $ha,
+        $slave,
+        $standby,
+        $pairs = array()
+    ) {
+        $id_virtual_machine = (int) $id_virtual_machine;
+
+        /**
+         * Validasi VM utama.
+         */
+        if ($id_virtual_machine <= 0) {
+            return false;
+        }
+
+        $vm_exists = $this->db
+            ->where("id_virtual_machine", $id_virtual_machine)
+            ->where("is_active", 1)
+            ->count_all_results($this->table_vm);
+
+        if ($vm_exists <= 0) {
+            return false;
+        }
+
+        /**
+         * Validasi Status Referensi.
+         */
+        $status_referensi = strtoupper(
+            trim((string) $status_referensi)
+        );
+
+        $allowed_status = array(
+            "NEED BACKUP",
+            "NO NEED BACKUP"
+        );
+
+        if (!in_array($status_referensi, $allowed_status, true)) {
+            return false;
+        }
+
+        /**
+         * Validasi flag manual.
+         *
+         * Hanya boleh:
+         * YES = 1
+         * NO  = 0
+         */
+        if (
+            !in_array((string) $db, array("0", "1"), true) ||
+            !in_array((string) $ha, array("0", "1"), true) ||
+            !in_array((string) $slave, array("0", "1"), true) ||
+            !in_array((string) $standby, array("0", "1"), true)
+        ) {
+            return false;
+        }
+
+        $db = (int) $db;
+        $ha = (int) $ha;
+        $slave = (int) $slave;
+        $standby = (int) $standby;
+
+        /**
+         * ============================================================
+         * NORMALISASI VM PASANGAN
+         * ============================================================
+         */
+        $allowed_pair_types = array(
+            "DB",
+            "HA",
+            "SLAVE",
+            "STANDBY"
+        );
+
+        $pair_rows = array();
+        $all_pair_ids = array();
+
+        foreach ($allowed_pair_types as $pair_type) {
+
+            $pair_ids = isset($pairs[$pair_type])
+                && is_array($pairs[$pair_type])
+                    ? $pairs[$pair_type]
+                    : array();
+
+            foreach ($pair_ids as $id_vm_pair) {
+
+                $id_vm_pair = (int) $id_vm_pair;
+
+                /**
+                 * Abaikan ID invalid dan VM dirinya sendiri.
+                 */
+                if (
+                    $id_vm_pair <= 0 ||
+                    $id_vm_pair === $id_virtual_machine
+                ) {
+                    continue;
+                }
+
+                /**
+                 * Hindari pasangan duplicate
+                 * pada pair type yang sama.
+                 */
+                $unique_key =
+                    $pair_type . "_" . $id_vm_pair;
+
+                if (isset($pair_rows[$unique_key])) {
+                    continue;
+                }
+
+                $pair_rows[$unique_key] = array(
+                    "id_virtual_machine" => $id_virtual_machine,
+                    "pair_type" => $pair_type,
+                    "id_vm_pair" => $id_vm_pair
+                );
+
+                $all_pair_ids[$id_vm_pair] = $id_vm_pair;
+            }
+        }
+
+        /**
+         * ============================================================
+         * VALIDASI VM PASANGAN
+         * ============================================================
+         *
+         * Semua pasangan harus:
+         * - ada di master_virtual_machine
+         * - masih aktif
+         */
+        if (!empty($all_pair_ids)) {
+
+            $valid_vm = $this->db
+                ->select("id_virtual_machine")
+                ->from($this->table_vm)
+                ->where("is_active", 1)
+                ->where_in(
+                    "id_virtual_machine",
+                    array_values($all_pair_ids)
+                )
+                ->get()
+                ->result();
+
+            $valid_ids = array();
+
+            foreach ($valid_vm as $vm) {
+                $valid_ids[(int) $vm->id_virtual_machine] = true;
+            }
+
+            foreach ($all_pair_ids as $id_vm_pair) {
+
+                if (!isset($valid_ids[(int) $id_vm_pair])) {
+                    return false;
+                }
+            }
+        }
+
+        /**
+         * ============================================================
+         * TRANSACTION
+         * ============================================================
+         */
+        $this->db->trans_begin();
+
+        /**
+         * Cek apakah VM sudah mempunyai row
+         * virtual_machine_backup.
+         */
+        $backup_exists = $this->db
+            ->where(
+                "id_virtual_machine",
+                $id_virtual_machine
+            )
+            ->count_all_results($this->table_backup);
+
+        /**
+         * Data yang BOLEH diubah manual dari dashboard.
+         *
+         * PENTING:
+         * status, vrep, rubrik TIDAK disentuh.
+         */
+        $backup_data = array(
+            "status_referensi" => $status_referensi,
+            "db" => $db,
+            "ha" => $ha,
+            "slave" => $slave,
+            "standby" => $standby
+        );
+
+        if ($backup_exists > 0) {
+
+            $this->db
+                ->where(
+                    "id_virtual_machine",
+                    $id_virtual_machine
+                )
+                ->update(
+                    $this->table_backup,
+                    $backup_data
+                );
+
+        } else {
+
+            $backup_data["id_virtual_machine"] =
+                $id_virtual_machine;
+
+            $this->db->insert(
+                $this->table_backup,
+                $backup_data
+            );
+        }
+
+        /**
+         * ============================================================
+         * SYNC VM PASANGAN
+         * ============================================================
+         *
+         * Hapus pasangan existing VM tersebut,
+         * kemudian insert ulang sesuai form Edit.
+         */
+        $this->db
+            ->where(
+                "id_virtual_machine",
+                $id_virtual_machine
+            )
+            ->delete(
+                "virtual_machine_backup_pair"
+            );
+
+        if (!empty($pair_rows)) {
+
+            $this->db->insert_batch(
+                "virtual_machine_backup_pair",
+                array_values($pair_rows)
+            );
+        }
+
+        /**
+         * ============================================================
+         * TRANSACTION RESULT
+         * ============================================================
+         */
+        if ($this->db->trans_status() === false) {
+
+            $this->db->trans_rollback();
+
+            return false;
+        }
+
+        $this->db->trans_commit();
+
+        return true;
+    }
 }

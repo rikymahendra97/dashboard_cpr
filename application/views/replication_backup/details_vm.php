@@ -25,6 +25,25 @@ $sla_rubrik = $vm_detail->sla_rubrik ?: "-";
 $backup_status = $vm_detail->backup_status ?: "-";
 $status_referensi = $vm_detail->status_referensi ?: "-";
 
+function rb_detail_backup_status_class($value)
+{
+    $value = strtoupper(trim((string) $value));
+
+    switch ($value) {
+        case "DONE BACKUP":
+            return "rb-status-done";
+
+        case "NEED BACKUP":
+            return "rb-status-need";
+
+        case "NO NEED BACKUP":
+            return "rb-status-no-need";
+
+        default:
+            return "rb-status-default";
+    }
+}
+
 $pair_groups = array(
     "DB" => array(),
     "HA" => array(),
@@ -160,7 +179,7 @@ function rb_detail_protection_badge($value)
     }
 
     .rb-detail-content {
-        padding: 18px;
+        padding: 0px;
     }
 
     .rb-detail-grid {
@@ -170,7 +189,7 @@ function rb_detail_protection_badge($value)
     }
 
     .rb-detail-item {
-        padding: 12px 15px;
+        padding: 14px;
         border-bottom: 1px solid #E2E8F0;
     }
 
@@ -316,6 +335,37 @@ function rb_detail_protection_badge($value)
         .rb-detail-item:nth-child(odd) {
             border-right: none;
         }
+    }
+
+    .rb-status-backup {
+        display: inline-block;
+        min-width: 100px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+        color: #fff;
+    }
+
+    .rb-status-done {
+        background: #10B981;
+        color: #fff;
+    }
+
+    .rb-status-need {
+        background: #F59E0B;
+        color: #fff;
+    }
+
+    .rb-status-no-need {
+        background: #EF4444;
+        color: #fff;
+    }
+
+    .rb-status-default {
+        background: #94A3B8;
+        color: #fff;
     }
 </style>
 
@@ -473,7 +523,7 @@ function rb_detail_protection_badge($value)
             <!-- =====================================================
                  REPLICATION & BACKUP
             ====================================================== -->
-            <div class="rb-detail-section">
+            <div class="rb-detail-section rb-detail-section-protection">
 
                 <h3 class="rb-detail-section-title">
                     <i class="fa fa-shield"></i>
@@ -492,13 +542,11 @@ function rb_detail_protection_badge($value)
                             </span>
 
                             <span class="rb-detail-value">
-
                                 <span
-                                    class="rb-detail-status <?= $status_class ?>"
+                                    class="rb-status-backup <?= rb_detail_backup_status_class($backup_status) ?>"
                                 >
                                     <?= html_escape($backup_status) ?>
                                 </span>
-
                             </span>
 
                         </div>

@@ -660,14 +660,16 @@ $list_vm = $list_vm ?? [];
                                                         <i class="fa fa-search"></i>
                                                     </a>
 
-                                                    <button
-                                                        type="button"
+                                                    <a
+                                                        href="<?= site_url(
+                                                            "replication_backup/edit_vm/" .
+                                                            $vm->id_virtual_machine
+                                                        ) ?>"
                                                         class="btn btn-warning btn-xs rb-action-btn"
                                                         title="Edit"
-                                                        disabled
                                                     >
                                                         <i class="fa fa-edit"></i>
-                                                    </button>
+                                                    </a>
 
                                                 </td>
 
