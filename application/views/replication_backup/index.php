@@ -199,6 +199,75 @@ $list_vm = $list_vm ?? [];
         margin: 1px;
     }
 
+    /* ============================================================
+        FILTER
+    ============================================================ */
+    .rb-filter-wrapper {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+
+    .rb-filter-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+    }
+
+    .rb-filter-group {
+        min-width: 0;
+    }
+
+    .rb-filter-label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 10px;
+        font-weight: bold;
+        color: #64748B;
+        text-transform: uppercase;
+    }
+
+    .rb-filter-select {
+        width: 100%;
+        height: 34px;
+        padding: 5px 8px;
+        border: 1px solid #CBD5E1;
+        border-radius: 4px;
+        background: #fff;
+        color: #334155;
+        font-size: 11px;
+    }
+
+    .rb-filter-select:focus {
+        outline: none;
+        border-color: #3B82F6;
+    }
+
+    .rb-filter-actions {
+        margin-top: 10px;
+        text-align: right;
+    }
+
+    @media (max-width: 1200px) {
+        .rb-filter-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .rb-filter-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .rb-filter-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
     @media (max-width: 1200px) {
         .rb-kpi-grid {
             grid-template-columns: repeat(3, 1fr);
@@ -404,7 +473,181 @@ $list_vm = $list_vm ?? [];
                     </div>
 
                     <div class="x_content">
+                        <!-- =========================================================
+                            FILTER
+                        ========================================================== -->
+                        <div class="rb-filter-wrapper">
 
+                            <div class="rb-filter-grid">
+
+                                <!-- SITE -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        Site
+                                    </label>
+
+                                    <select
+                                        id="filter-site"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                    </select>
+                                </div>
+
+
+                                <!-- VCENTER -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        vCenter
+                                    </label>
+
+                                    <select
+                                        id="filter-vcenter"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                    </select>
+                                </div>
+
+
+                                <!-- ENVIRONMENT -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        Environment
+                                    </label>
+
+                                    <select
+                                        id="filter-environment"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                    </select>
+                                </div>
+
+
+                                <!-- CRITICALITY -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        Criticality
+                                    </label>
+
+                                    <select
+                                        id="filter-criticality"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                        <option value="Critical">Critical</option>
+                                        <option value="Very High">Very High</option>
+                                        <option value="High">High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                </div>
+
+
+                                <!-- STATUS BACKUP -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        Status Backup
+                                    </label>
+
+                                    <select
+                                        id="filter-status-backup"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                        <option value="DONE BACKUP">DONE BACKUP</option>
+                                        <option value="NEED BACKUP">NEED BACKUP</option>
+                                        <option value="NO NEED BACKUP">NO NEED BACKUP</option>
+                                    </select>
+                                </div>
+
+
+                                <!-- VREPS -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        vReps
+                                    </label>
+
+                                    <select
+                                        id="filter-vrep"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                        <option value="YES">YES</option>
+                                        <option value="NO">NO</option>
+                                    </select>
+                                </div>
+
+
+                                <!-- RUBRIK -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        Rubrik
+                                    </label>
+
+                                    <select
+                                        id="filter-rubrik"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                        <option value="YES">YES</option>
+                                        <option value="NO">NO</option>
+                                    </select>
+                                </div>
+
+
+                                <!-- DB -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        DB
+                                    </label>
+
+                                    <select
+                                        id="filter-db"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                        <option value="YES">YES</option>
+                                        <option value="NO">NO</option>
+                                    </select>
+                                </div>
+
+
+                                <!-- HA -->
+                                <div class="rb-filter-group">
+                                    <label class="rb-filter-label">
+                                        HA
+                                    </label>
+
+                                    <select
+                                        id="filter-ha"
+                                        class="rb-filter-select"
+                                    >
+                                        <option value="">All</option>
+                                        <option value="YES">YES</option>
+                                        <option value="NO">NO</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="rb-filter-actions">
+
+                                <button
+                                    type="button"
+                                    id="btn-reset-filter"
+                                    class="btn btn-default btn-sm"
+                                >
+                                    <i class="fa fa-refresh"></i>
+                                    Reset Filter
+                                </button>
+
+                            </div>
+
+                        </div>
+                        
                         <div
                             class="table-responsive"
                             style="overflow-x:auto; width:100%;"
@@ -709,20 +952,306 @@ $list_vm = $list_vm ?? [];
 <script>
 $(document).ready(function () {
 
-    if ($.fn.DataTable) {
+    if (!$.fn.DataTable) {
+        return;
+    }
 
-        $('#table-replication-backup').DataTable({
-            pageLength: 25,
-            lengthMenu: [
-                [10, 25, 50, 100, -1],
-                [10, 25, 50, 100, "All"]
-            ],
-            ordering: true,
-            searching: true,
-            responsive: false
+    /**
+     * ============================================================
+     * DATATABLE
+     * ============================================================
+     */
+    var table = $('#table-replication-backup').DataTable({
+        pageLength: 25,
+        lengthMenu: [
+            [10, 25, 50, 100, -1],
+            [10, 25, 50, 100, "All"]
+        ],
+        ordering: true,
+        searching: true,
+        responsive: false
+    });
+
+
+    /**
+     * ============================================================
+     * COLUMN INDEX
+     * ============================================================
+     *
+     * 0  = No
+     * 1  = Nama VM
+     * 2  = Power State
+     * 3  = vCenter
+     * 4  = Site
+     * 5  = Environment
+     * 6  = Aplikasi
+     * 7  = Criticality
+     * 8  = Status Backup
+     * 9  = vReps
+     * 10 = Rubrik
+     * 11 = DB
+     * 12 = HA
+     * 13 = Standby
+     * 14 = Aksi
+     */
+    var columnIndex = {
+        vcenter: 3,
+        site: 4,
+        environment: 5,
+        criticality: 7,
+        statusBackup: 8,
+        vrep: 9,
+        rubrik: 10,
+        db: 11,
+        ha: 12
+    };
+
+
+    /**
+     * ============================================================
+     * HELPER - NORMALIZE TEXT
+     * ============================================================
+     */
+    function normalizeText(value) {
+
+        return $('<div>')
+            .html(value)
+            .text()
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+
+    /**
+     * ============================================================
+     * POPULATE DROPDOWN DARI DATA TABLE
+     * ============================================================
+     */
+    function populateFilter(selectId, columnNumber) {
+
+        var $select = $(selectId);
+
+        var values = [];
+
+        table
+            .column(columnNumber)
+            .data()
+            .each(function (value) {
+
+                value = normalizeText(value);
+
+                if (
+                    value !== '' &&
+                    values.indexOf(value) === -1
+                ) {
+                    values.push(value);
+                }
+
+            });
+
+        values.sort(function (a, b) {
+            return a.localeCompare(b);
+        });
+
+        values.forEach(function (value) {
+
+            $select.append(
+                $('<option>', {
+                    value: value,
+                    text: value
+                })
+            );
+
         });
 
     }
+
+
+    /**
+     * Site, vCenter dan Environment tidak di-hardcode.
+     * Nilainya otomatis mengikuti data yang ada di tabel.
+     */
+    populateFilter(
+        '#filter-site',
+        columnIndex.site
+    );
+
+    populateFilter(
+        '#filter-vcenter',
+        columnIndex.vcenter
+    );
+
+    populateFilter(
+        '#filter-environment',
+        columnIndex.environment
+    );
+
+
+    /**
+     * ============================================================
+     * APPLY EXACT COLUMN FILTER
+     * ============================================================
+     */
+    function applyColumnFilter(columnNumber, value) {
+
+        if (value === '') {
+
+            table
+                .column(columnNumber)
+                .search('')
+                .draw();
+
+            return;
+        }
+
+        var escapedValue =
+            $.fn.dataTable.util.escapeRegex(
+                $.trim(value)
+            );
+
+        /**
+        * Izinkan whitespace sebelum / sesudah nilai.
+        *
+        * Ini penting untuk kolom yang menggunakan badge HTML:
+        * Criticality
+        * Status Backup
+        * vReps
+        * Rubrik
+        * DB
+        * HA
+        */
+        var exactPattern =
+            '^\\s*' + escapedValue + '\\s*$';
+
+        table
+            .column(columnNumber)
+            .search(
+                exactPattern,
+                true,
+                false
+            )
+            .draw();
+    }
+
+
+    /**
+     * ============================================================
+     * FILTER EVENTS
+     * ============================================================
+     */
+
+    $('#filter-site').on('change', function () {
+        applyColumnFilter(
+            columnIndex.site,
+            $(this).val()
+        );
+    });
+
+
+    $('#filter-vcenter').on('change', function () {
+        applyColumnFilter(
+            columnIndex.vcenter,
+            $(this).val()
+        );
+    });
+
+
+    $('#filter-environment').on('change', function () {
+        applyColumnFilter(
+            columnIndex.environment,
+            $(this).val()
+        );
+    });
+
+
+    $('#filter-criticality').on('change', function () {
+        applyColumnFilter(
+            columnIndex.criticality,
+            $(this).val()
+        );
+    });
+
+
+    $('#filter-status-backup').on('change', function () {
+        applyColumnFilter(
+            columnIndex.statusBackup,
+            $(this).val()
+        );
+    });
+
+
+    $('#filter-vrep').on('change', function () {
+        applyColumnFilter(
+            columnIndex.vrep,
+            $(this).val()
+        );
+    });
+
+
+    $('#filter-rubrik').on('change', function () {
+        applyColumnFilter(
+            columnIndex.rubrik,
+            $(this).val()
+        );
+    });
+
+
+    $('#filter-db').on('change', function () {
+        applyColumnFilter(
+            columnIndex.db,
+            $(this).val()
+        );
+    });
+
+
+    $('#filter-ha').on('change', function () {
+        applyColumnFilter(
+            columnIndex.ha,
+            $(this).val()
+        );
+    });
+
+
+    /**
+     * ============================================================
+     * RESET FILTER
+     * ============================================================
+     */
+    $('#btn-reset-filter').on('click', function () {
+
+        /**
+         * Reset seluruh dropdown.
+         */
+        $('.rb-filter-select').val('');
+
+
+        /**
+         * Reset semua column search.
+         */
+        table
+            .columns()
+            .search('');
+
+
+        /**
+         * Reset search box DataTables juga.
+         */
+        table.search('');
+
+
+        /**
+         * Redraw table.
+         */
+        table.draw();
+
+
+        /**
+         * Kosongkan input Search bawaan DataTables.
+         */
+        $('#table-replication-backup_filter input')
+            .val('');
+
+    });
 
 });
 </script>
