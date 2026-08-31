@@ -25,6 +25,17 @@ $sla_rubrik = $vm_detail->sla_rubrik ?: "-";
 $backup_status = $vm_detail->backup_status ?: "-";
 $status_referensi = $vm_detail->status_referensi ?: "-";
 
+$need_backup_reason =
+    trim(
+        (string) (
+            $vm_detail->need_backup_reason_name ?? ""
+        )
+    );
+
+if ($need_backup_reason === "") {
+    $need_backup_reason = "-";
+}
+
 function rb_detail_backup_status_class($value)
 {
     $value = strtoupper(trim((string) $value));
@@ -560,6 +571,19 @@ function rb_detail_protection_badge($value)
 
                             <span class="rb-detail-value">
                                 <?= html_escape($status_referensi) ?>
+                            </span>
+
+                        </div>
+
+                        <!-- Reason Need Backup -->
+                        <div class="rb-detail-item">
+
+                            <span class="rb-detail-label">
+                                Reason Need Backup
+                            </span>
+
+                            <span class="rb-detail-value">
+                                <?= html_escape($need_backup_reason) ?>
                             </span>
 
                         </div>

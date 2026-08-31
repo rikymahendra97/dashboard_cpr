@@ -782,6 +782,193 @@ function rb_edit_protection_badge($value)
                         </div>
                     </div>
 
+                    <?php
+                    $need_backup_reason_required =
+                        strtoupper(
+                            trim(
+                                (string) ($vm_detail->id_site ?? "")
+                            )
+                        ) === "GTI"
+                        &&
+                        strtoupper(
+                            trim(
+                                (string) ($vm_detail->backup_status ?? "")
+                            )
+                        ) === "NEED BACKUP";
+
+
+                    $current_need_backup_reason_id =
+                        (int) (
+                            $vm_detail->id_need_backup_reason ?? 0
+                        );
+
+                    $current_need_backup_reason_name =
+                        trim(
+                            (string) (
+                                $vm_detail->need_backup_reason_name ?? ""
+                            )
+                        );
+
+
+                    /**
+                     * Index kategori aktif.
+                     *
+                     * Dipakai untuk mengetahui apakah reason
+                     * existing masih aktif atau sudah dinonaktifkan.
+                     */
+                    $active_need_backup_reason_ids = array();
+
+                    foreach (
+                        (array) ($need_backup_reasons ?? array())
+                        as $reason
+                    ) {
+                        $active_need_backup_reason_ids[
+                            (int) $reason->id_need_backup_reason
+                        ] = true;
+                    }
+
+
+                    $current_need_backup_reason_is_active =
+                        $current_need_backup_reason_id > 0
+                        &&
+                        isset(
+                            $active_need_backup_reason_ids[
+                                $current_need_backup_reason_id
+                            ]
+                        );
+                    ?>
+
+                    <div class="rb-detail-item">
+
+                        <span class="rb-detail-label">
+                            Reason Need Backup
+
+                            <?php if ($need_backup_reason_required): ?>
+                                <span style="color:#EF4444;">*</span>
+                            <?php endif; ?>
+                        </span>
+
+                        <select
+                            name="id_need_backup_reason"
+                            id="id_need_backup_reason"
+                            class="rb-select"
+                            data-required="<?= $need_backup_reason_required ? "1" : "0" ?>"
+                            <?= !$need_backup_reason_required ? "disabled" : "" ?>
+                        >
+
+                            <?php
+                            /**
+                             * Jika reason existing sudah nonaktif,
+                             * tetap tampilkan sebagai informasi historis.
+                             *
+                             * Tetapi option dibuat disabled sehingga
+                             * tidak boleh disimpan kembali sebagai pilihan baru.
+                             */
+                            if (
+                                $current_need_backup_reason_id > 0
+                                &&
+                                !$current_need_backup_reason_is_active
+                            ):
+                            ?>
+
+                                <option
+                                    value="<?= $current_need_backup_reason_id ?>"
+                                    selected
+                                    disabled
+                                    data-inactive="1"
+                                >
+                                    <?= html_escape(
+                                        $current_need_backup_reason_name !== ""
+                                            ? $current_need_backup_reason_name
+                                                . " (Nonaktif)"
+                                            : "Kategori lama (Nonaktif)"
+                                    ) ?>
+                                </option>
+
+                            <?php elseif ($current_need_backup_reason_id <= 0): ?>
+
+                                <option
+                                    value=""
+                                    selected
+                                >
+                                    -- Pilih Reason Need Backup --
+                                </option>
+
+                            <?php else: ?>
+
+                                <option value="">
+                                    -- Pilih Reason Need Backup --
+                                </option>
+
+                            <?php endif; ?>
+
+
+                            <?php foreach (
+                                (array) ($need_backup_reasons ?? array())
+                                as $reason
+                            ): ?>
+
+                                <?php
+                                $reason_id =
+                                    (int) $reason->id_need_backup_reason;
+                                ?>
+
+                                <option
+                                    value="<?= $reason_id ?>"
+                                    <?=
+                                        $current_need_backup_reason_is_active
+                                        &&
+                                        $current_need_backup_reason_id === $reason_id
+                                            ? "selected"
+                                            : ""
+                                    ?>
+                                >
+                                    <?= html_escape(
+                                        $reason->reason_name
+                                    ) ?>
+                                </option>
+
+                            <?php endforeach; ?>
+
+                        </select>
+
+
+                        <?php if ($need_backup_reason_required): ?>
+
+                            <div class="rb-form-note">
+                                Wajib dipilih karena VM ini berada di
+                                <strong>GTI</strong> dengan actual Status Backup
+                                <strong>NEED BACKUP</strong>.
+                            </div>
+
+                            <?php if (
+                                $current_need_backup_reason_id > 0
+                                &&
+                                !$current_need_backup_reason_is_active
+                            ): ?>
+
+                                <div
+                                    class="rb-form-note"
+                                    style="color:#B45309;"
+                                >
+                                    Kategori existing sudah nonaktif.
+                                    Pilih kategori aktif sebelum menyimpan perubahan.
+                                </div>
+
+                            <?php endif; ?>
+
+                        <?php else: ?>
+
+                            <div class="rb-form-note">
+                                Reason hanya dapat diubah untuk VM GTI dengan
+                                actual Status Backup NEED BACKUP.
+                                Nilai historis tidak dihapus otomatis.
+                            </div>
+
+                        <?php endif; ?>
+
+                    </div>
+
                     <div class="rb-detail-item">
                         <span class="rb-detail-label">vReps</span>
                         <span class="rb-detail-value">
@@ -1428,6 +1615,13 @@ function rb_edit_protection_badge($value)
                             .val() || ""
                     ),
 
+                id_need_backup_reason:
+                    String(
+                        $form
+                            .find("[name='id_need_backup_reason']")
+                            .val() || ""
+                    ),
+
                 db:
                     String(
                         $form
@@ -1490,6 +1684,124 @@ function rb_edit_protection_badge($value)
                 getFormState() !== initialFormState
             );
 
+        }
+
+        /**
+        * ============================================================
+        * NEED BACKUP REASON VALIDATION
+        * ============================================================
+        */
+        var needBackupReasonRequired =
+            <?= $need_backup_reason_required
+                ? "true"
+                : "false" ?>;
+
+
+        /**
+        * Ambil nama reason yang sedang dipilih.
+        */
+        function getSelectedNeedBackupReasonName() {
+
+            var $selected =
+                $form
+                    .find(
+                        "[name='id_need_backup_reason'] option:selected"
+                    );
+
+            return $.trim(
+                $selected.text() || ""
+            );
+        }
+
+
+        /**
+        * Validasi sebelum native submit.
+        */
+        function validateNeedBackupReason() {
+
+            /**
+            * Bukan GTI + NEED BACKUP.
+            * Tidak ada validasi reason.
+            */
+            if (!needBackupReasonRequired) {
+                return true;
+            }
+
+
+            var $select =
+                $form.find(
+                    "[name='id_need_backup_reason']"
+                );
+
+            var value =
+                String(
+                    $select.val() || ""
+                );
+
+            var $selected =
+                $select.find(
+                    "option:selected"
+                );
+
+
+            /**
+            * Kosong atau option historical yang
+            * sudah dinonaktifkan.
+            */
+            if (
+                value === ""
+                ||
+                $selected.prop("disabled")
+                ||
+                $selected.data("inactive") === 1
+            ) {
+
+                showRbAlert(
+                    "Data Belum Lengkap",
+                    "Reason Need Backup wajib dipilih dari kategori yang masih aktif.",
+                    "error"
+                );
+
+                $select.trigger("focus");
+
+                return false;
+            }
+
+
+            return true;
+        }
+
+
+        /**
+        * Pesan modal konfirmasi Save.
+        *
+        * Untuk GTI + NEED BACKUP, nama reason
+        * ikut diperlihatkan kepada user.
+        */
+        function getSaveConfirmationMessage() {
+
+            var message =
+                "Ada perubahan data.";
+
+            if (needBackupReasonRequired) {
+
+                var reasonName =
+                    getSelectedNeedBackupReasonName();
+
+                if (reasonName !== "") {
+
+                    message +=
+                        " Reason Need Backup: " +
+                        reasonName +
+                        ".";
+                }
+            }
+
+
+            message +=
+                " Apakah perubahan ingin disimpan?";
+
+            return message;
         }
 
         /**
@@ -1752,7 +2064,7 @@ function rb_edit_protection_badge($value)
                 */
                 showRbConfirm(
                     "Simpan Perubahan?",
-                    "Ada perubahan data. Apakah perubahan ingin disimpan?",
+                    getSaveConfirmationMessage(),
 
                     /**
                     * YES
@@ -1765,6 +2077,10 @@ function rb_edit_protection_badge($value)
                         * Setelah berhasil Controller
                         * kembali ke halaman Edit.
                         */
+                        if (!validateNeedBackupReason()) {
+                            return;
+                        }
+
                         $form[0].submit();
 
                     },
@@ -1818,7 +2134,7 @@ function rb_edit_protection_badge($value)
                 */
                 showRbConfirm(
                     "Simpan Perubahan?",
-                    "Ada perubahan data. Apakah perubahan ingin disimpan?",
+                    getSaveConfirmationMessage(),
 
                     /**
                     * YES
@@ -1829,6 +2145,10 @@ function rb_edit_protection_badge($value)
                         * Native submit supaya event submit
                         * tidak terpanggil kembali.
                         */
+                        if (!validateNeedBackupReason()) {
+                            return;
+                        }
+
                         $form[0].submit();
 
                     },
